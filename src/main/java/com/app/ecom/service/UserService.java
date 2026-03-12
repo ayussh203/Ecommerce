@@ -1,29 +1,31 @@
 package com.app.ecom.service;
 
 
-import com.app.ecom.model.User;
+import com.app.ecom.model.*;
 import com.app.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-   // private List<User> userList=new ArrayList<>();
     private final UserRepository userRepository;
-    private Long nextId=1L;
-    public List<User> fetchAllUsers()
-    {
-        return userRepository.findAll();
+    private final ModelMapper modelMapper;
+
+    public List<UserResponse> fetchAllUsers(){
+        return userRepository.findAll().stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
     }
-    public void addUser(User user)
+    public void addUser(UserRequest request)
     {
-       // user.setId(nextId++);
-        //userList.add(user);
+        User user=modelMapper.map(request,User.class);
         userRepository.save(user);
 
     }
@@ -38,6 +40,15 @@ public class UserService {
                userRepository.save(u);
                 return true;
                 }).orElse(false);
+    }
+    private void updateUserFromRequest(User user, UserRequest userRequest) {
+        modelMapper.map(userRequest, user);
+    }
+
+    private UserResponse mapToUserResponse(User user){
+        UserResponse response = modelMapper.map(user, UserResponse.class);
+        response.setId(String.valueOf(user.getId()));
+        return response;
     }
 
 }

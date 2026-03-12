@@ -1,7 +1,9 @@
 package com.app.ecom.controller;
 
+import com.app.ecom.model.UserRequest;
 import com.app.ecom.service.UserService;
 import com.app.ecom.model.User;
+import com.app.ecom.model.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<UserResponse>> getAllUsers(){
         return new ResponseEntity<>(userService.fetchAllUsers(),
                 HttpStatus.OK);
         //return ResponseEntity.ok(userService.fetchAllUsers());
@@ -30,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody User user){
+    public ResponseEntity<String> createUser(@RequestBody UserRequest user){
         userService.addUser(user);
         return ResponseEntity.ok("User added successfully");
     }
